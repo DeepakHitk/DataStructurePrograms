@@ -4,7 +4,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.Stack;
 
-public class ISBalancedBinaryTree {
+public class LargestBST_Subtree {
     public static class Node {
         int data;
         Node left;
@@ -82,21 +82,44 @@ public class ISBalancedBinaryTree {
         display(node.right);
     }
 
-    private static boolean isBBT = true;
-    public static int isBBTWithHeight(Node root){
+    public static class LargestBSTDataSet{
+        int min;
+        int max;
+        int size;
+        boolean isBST;
+
+        public LargestBSTDataSet(int min, int max, int size, boolean isBST) {
+            this.min = min;
+            this.max = max;
+            this.size = size;
+            this.isBST = isBST;
+        }
+    }
+
+    public static int largestSizeBST = 0;
+    public static String output = "";
+    public static LargestBSTDataSet largestBST(Node root){
 
         if(root == null){
-            return 0;
+            return new LargestBSTDataSet(Integer.MAX_VALUE, Integer.MIN_VALUE, 0, true);
         }
 
-        int leftHeight = isBBTWithHeight(root.left);
-        int rightHeight = isBBTWithHeight(root.right);
+        LargestBSTDataSet leftData = largestBST(root.left);
+        LargestBSTDataSet rightData = largestBST(root.right);
 
-        if(Math.abs(leftHeight - rightHeight) > 1){
-            isBBT = false;
+        boolean isBST = false;
+        int min = Math.min(leftData.min, root.data);
+        int max = Math.max(rightData.max, root.data);
+        int size = leftData.size + rightData.size + 1;
+
+        if(root.data >= leftData.max && root.data <= rightData.min && leftData.isBST && rightData.isBST){
+            isBST = true;
+            if(size > largestSizeBST){
+                largestSizeBST = size;
+                output = String.valueOf(root.data) + "@" + String.valueOf(size);
+            }
         }
-
-        return Math.max(leftHeight, rightHeight) + 1;
+        return new LargestBSTDataSet(min, max, size, isBST);
 
     }
 
@@ -116,8 +139,8 @@ public class ISBalancedBinaryTree {
         Node root = construct(arr);
 
         // write your code here
-        isBBTWithHeight(root);
-        System.out.println(isBBT);
+        largestBST(root);
+        System.out.println(output);
     }
 
 }
